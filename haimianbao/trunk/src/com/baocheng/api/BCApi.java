@@ -20,9 +20,55 @@ import org.json.JSONObject;
 import com.baocheng.callback.BCApiCallBack;
 
 public class BCApi {
-	private static String site = "http://api.test.baoxiandr.com";
+	private static String testSite = "http://api.test.baoxiandr.com";
 	private static JSONObject jsCustomer;
 	private static String code;
+	private static String appKey;
+	private static String appSecret;
+	private static boolean isTest;
+
+	/**
+	 * 判断是否测试环境，设置site
+	 */
+	private static String getSite() {
+		if (isTest) {
+			return testSite;
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * <strong><center>2014-07-07 16:32</center> <center><font
+	 * size=4>------------
+	 * --------------初始化SDK--------------------------</font></center>
+	 * 
+	 * @param appKey
+	 * @param appSecret
+	 * @param isTest
+	 *            是否为测试环境
+	 */
+	public static void initBCSDK(String appKey, String appSecret, boolean isTest) {
+		setAppKey(appKey);
+		setAppSecret(appSecret);
+		BCApi.isTest = isTest;
+	}
+
+	public static String getAppKey() {
+		return appKey;
+	}
+
+	private static void setAppKey(String appKey) {
+		BCApi.appKey = appKey;
+	}
+
+	public static String getAppSecret() {
+		return appSecret;
+	}
+
+	private static void setAppSecret(String appSecret) {
+		BCApi.appSecret = appSecret;
+	}
 
 	/**
 	 * <strong><center>2014-07-02 11:42</center> <center><font
@@ -277,7 +323,7 @@ public class BCApi {
 	public static void getDetail(String code, BCApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("code", code);
-		BCNet.get(site + "/api/insurance/detail", addParams, 1000 * 10, callBack);
+		BCNet.get(getSite() + "/api/insurance/detail", addParams, 1000 * 10, callBack);
 	}
 
 	/**
@@ -297,7 +343,7 @@ public class BCApi {
 	public static void getInfo(String code, BCApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("code", code);
-		BCNet.get(site + "/api/insurance/info", addParams, 1000 * 10, callBack);
+		BCNet.get(getSite() + "/api/insurance/info", addParams, 1000 * 10, callBack);
 	}
 
 	/**
@@ -330,7 +376,7 @@ public class BCApi {
 	public static void getRegion(String code, BCApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("code", code);
-		BCNet.get(site + "/api/region", addParams, 1000 * 10, callBack);
+		BCNet.get(getSite() + "/api/region", addParams, 1000 * 10, callBack);
 	}
 
 	/**
@@ -372,12 +418,13 @@ public class BCApi {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		BCNet.post(site + "/api/insurance/buy", addParams, 1000 * 10, callBack, "application/json", js.toString());
+		BCNet.post(getSite() + "/api/insurance/buy", addParams, 1000 * 10, callBack, "application/json", js.toString());
 	}
 
 	/**
 	 * <strong><center>2014-07-07 14:16</center> <center><font
-	 * size=4>------------------------设置用户信息-----------------------</font></center>
+	 * size=4>------------
+	 * ------------设置用户信息-----------------------</font></center>
 	 * 
 	 * @param code
 	 *            保险代码
@@ -416,7 +463,7 @@ public class BCApi {
 	public static void sendVerifyCode(String mobile, BCApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("mobile", mobile);
-		BCNet.post(site + "/api/verify-code", addParams, 1000 * 10, callBack);
+		BCNet.post(getSite() + "/api/verify-code", addParams, 1000 * 10, callBack);
 	}
 
 	/**

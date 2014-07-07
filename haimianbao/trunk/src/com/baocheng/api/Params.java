@@ -24,8 +24,8 @@ public class Params {
 	 */
 	public Params() {
 		params = new ArrayList<NameValuePair>();
-		ArrayList<String> signatures = getSha1("dedc44b3ab0e8e341260c14169792aff");
-		add("appkey", "c4ca4238a0b923820dcc509a6f75849b");
+		ArrayList<String> signatures = getSha1(BCApi.getAppSecret());
+		add("appkey", BCApi.getAppKey());
 		add("nonce", signatures.get(0));
 		add("timestamp", signatures.get(1));
 		add("signature", signatures.get(2));
