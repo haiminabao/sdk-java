@@ -1,39 +1,28 @@
-package com.baocheng.net;
+package com.baocheng.api;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.io.IOException;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.baocheng.callback.BCApiCallBack;
-import com.baocheng.callback.BCIBuyCallBack;
 
 public class BCApi {
-	private static String header = "http://api.test.baoxiandr.com";
-
-	/**
-	 * 大都会人寿
-	 * 
-	 * @param callBack
-	 */
-	public static void daDuHui(final BCIBuyCallBack callBack) {
-		new Thread() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(5000);
-					Date date = new Date();
-					date.setTime(System.currentTimeMillis() + (24 * 60 * 60 * 1000));
-					String string = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA).format(date);
-					callBack.buyDaDuHuiCallBack("恭喜您获赠保额55万大都会航空意外险!\n保单号:FP0023545920\n生效日期：" + string);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
-	}
+	private static String site = "http://api.test.baoxiandr.com";
+	private static JSONObject jsCustomer;
+	private static String code;
 
 	/**
 	 * <strong><center>2014-07-02 11:42</center> <center><font
@@ -285,10 +274,10 @@ public class BCApi {
 	 * @param callBack
 	 *            结果回调
 	 */
-	public static void getInsuranceDetail(String code, BCApiCallBack callBack) {
-		AddParams addParams = new AddParams();
+	public static void getDetail(String code, BCApiCallBack callBack) {
+		Params addParams = new Params();
 		addParams.add("code", code);
-		BCNet.getInstance().get(header + "/api/insurance/detail", addParams, 1000 * 10, callBack);
+		BCNet.get(site + "/api/insurance/detail", addParams, 1000 * 10, callBack);
 	}
 
 	/**
@@ -305,10 +294,10 @@ public class BCApi {
 	 * @param callBack
 	 *            结果回调
 	 */
-	public static void getInsuranceInfo(String code, BCApiCallBack callBack) {
-		AddParams addParams = new AddParams();
+	public static void getInfo(String code, BCApiCallBack callBack) {
+		Params addParams = new Params();
 		addParams.add("code", code);
-		BCNet.getInstance().get(header + "/api/insurance/info", addParams, 1000 * 10, callBack);
+		BCNet.get(site + "/api/insurance/info", addParams, 1000 * 10, callBack);
 	}
 
 	/**
@@ -339,9 +328,9 @@ public class BCApi {
 	 *            结果回调
 	 */
 	public static void getRegion(String code, BCApiCallBack callBack) {
-		AddParams addParams = new AddParams();
+		Params addParams = new Params();
 		addParams.add("code", code);
-		BCNet.getInstance().get(header + "/api/region", addParams, 1000 * 10, callBack);
+		BCNet.get(site + "/api/region", addParams, 1000 * 10, callBack);
 	}
 
 	/**
@@ -349,6 +338,8 @@ public class BCApi {
 	 * size=4>------------
 	 * --------------保险购买--------------------------</font></center> 返回结果(json): <br>
 	 * { "result_code": "10000", "reason": "购买成功", "result": null }
+	 * 
+	 * @param customerInfo
 	 * 
 	 * @param customer_name
 	 *            客户名称
@@ -362,37 +353,52 @@ public class BCApi {
 	 *            联系城市
 	 * @param customer_verify
 	 *            手机验证码
-	 * @param code
-	 *            保险代码
 	 * @param dealer_id
 	 *            代理人ID
 	 * @param callBack
 	 *            结果回调
 	 */
-	public static void buyInsurance(String customer_name, String customer_id, String customer_mobile,
-			String customer_contact_state, String customer_contact_city, String customer_verify, String code,
-			String dealer_id, BCApiCallBack callBack) {
-		AddParams addParams = new AddParams();
+	public static void buy(String dealer_id, BCApiCallBack callBack) {
+		Params addParams = new Params();
 		JSONObject js = new JSONObject();
 		try {
-			JSONObject js1 = new JSONObject();
-			js1.put("name", customer_name);
-			js1.put("id", customer_id);
-			js1.put("mobile", customer_mobile);
-			js1.put("contact_state", customer_contact_state);
-			js1.put("contact_city", customer_contact_city);
-			js1.put("verify", customer_verify);
-			JSONObject js2 = new JSONObject();
-			js2.put("code", code);
-			JSONObject js3 = new JSONObject();
-			js3.put("id", dealer_id);
-			js.put("customer", js1);
-			js.put("insurance", js2);
-			js.put("dealer", js3);
+			JSONObject jsCode = new JSONObject();
+			jsCode.put("code", code);
+			JSONObject jsId = new JSONObject();
+			jsId.put("id", dealer_id);
+			js.put("customer", jsCustomer);
+			js.put("insurance", jsCode);
+			js.put("dealer", jsId);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		BCNet.getInstance().post(header + "/api/insurance/buy", addParams, 1000 * 10, callBack,"application/json",js.toString());
+		BCNet.post(site + "/api/insurance/buy", addParams, 1000 * 10, callBack, "application/json", js.toString());
+	}
+
+	/**
+	 * <strong><center>2014-07-07 14:16</center> <center><font
+	 * size=4>------------------------设置用户信息-----------------------</font></center>
+	 * 
+	 * @param code
+	 *            保险代码
+	 * @param infos
+	 *            客户信息
+	 */
+	public static void setCustomerInfo(String code, String... infos) {
+		jsCustomer = new JSONObject();
+		BCApi.code = code;
+		if (("B604FA6F".equals(code)) && (infos.length == 6)) {
+			try {
+				jsCustomer.put("name", infos[0]);
+				jsCustomer.put("id", infos[1]);
+				jsCustomer.put("mobile", infos[2]);
+				jsCustomer.put("contact_state", infos[3]);
+				jsCustomer.put("contact_city", infos[4]);
+				jsCustomer.put("verify", infos[5]);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -408,9 +414,139 @@ public class BCApi {
 	 *            结果回调
 	 */
 	public static void sendVerifyCode(String mobile, BCApiCallBack callBack) {
-		AddParams addParams = new AddParams();
+		Params addParams = new Params();
 		addParams.add("mobile", mobile);
-		BCNet.getInstance().post(header + "/api/verify-code", addParams, 1000 * 10, callBack);
+		BCNet.post(site + "/api/verify-code", addParams, 1000 * 10, callBack);
+	}
+
+	/**
+	 * 联网类
+	 */
+	private static class BCNet {
+		private static String url;
+
+		/**
+		 * get请求
+		 * 
+		 * @param url
+		 * @param addParams
+		 *            添加参数
+		 * @param timeout
+		 *            超时时间
+		 * @param callBack
+		 *            结果回调
+		 */
+		private static void get(final String url1, final Params addParams, final int timeout,
+				final BCApiCallBack callBack) {
+			new Thread() {
+				public void run() {
+					url = addParams.getUrl(url1);
+					System.out.println(url);
+					HttpGet get = new HttpGet(url);
+					try {
+						HttpResponse response = new DefaultHttpClient(setConnParams(timeout)).execute(get);
+						int code = response.getStatusLine().getStatusCode();
+						if (code == 200) {
+							callBack.OnSuccess(EntityUtils.toString(response.getEntity()));
+						} else {
+							callBack.OnFail(code + "");
+						}
+					} catch (ClientProtocolException e) {
+						callBack.OnFail(e.getMessage());
+					} catch (IOException e) {
+						callBack.OnFail(e.getMessage());
+					}
+				};
+			}.start();
+		}
+
+		/**
+		 * post请求
+		 * 
+		 * @param url
+		 * @param addParams
+		 *            添加参数
+		 * @param timeout
+		 *            超时时间
+		 * @param callBack
+		 *            结果回调
+		 */
+		private static void post(final String url2, final Params addParams, final int timeout,
+				final BCApiCallBack callBack) {
+			new Thread() {
+				public void run() {
+					HttpPost post = new HttpPost(url2);
+					url = addParams.getUrl(url2);
+					HttpEntity entity;
+					try {
+						entity = new UrlEncodedFormEntity(addParams.getParams());
+						post.setEntity(entity);
+						HttpResponse response = new DefaultHttpClient(setConnParams(timeout)).execute(post);
+						int code = response.getStatusLine().getStatusCode();
+						if (code == 200) {
+							callBack.OnSuccess(EntityUtils.toString(response.getEntity()));
+						} else {
+							callBack.OnFail(code + "");
+						}
+					} catch (ClientProtocolException e) {
+						callBack.OnFail(e.getMessage());
+					} catch (IOException e) {
+						callBack.OnFail(e.getMessage());
+					}
+				};
+			}.start();
+		}
+
+		/**
+		 * 带头的post请求
+		 * 
+		 * @param url
+		 * @param addParams
+		 *            添加参数
+		 * @param timeout
+		 *            超时时间
+		 * @param callBack
+		 *            结果回调
+		 */
+		private static void post(final String url2, final Params addParams, final int timeout,
+				final BCApiCallBack callBack, final String header, final String json) {
+			new Thread() {
+				public void run() {
+					url = addParams.getUrl(url2);
+					HttpPost post = new HttpPost(url);
+					post.addHeader("Content Type", header);
+					HttpEntity entity;
+					try {
+						entity = new StringEntity(json);
+						post.setEntity(entity);
+						HttpResponse response = new DefaultHttpClient(setConnParams(timeout)).execute(post);
+						int code = response.getStatusLine().getStatusCode();
+						if (code == 200) {
+							callBack.OnSuccess(EntityUtils.toString(response.getEntity()));
+						} else {
+							callBack.OnFail(code + "");
+						}
+					} catch (ClientProtocolException e) {
+						callBack.OnFail(e.getMessage());
+					} catch (IOException e) {
+						callBack.OnFail(e.getMessage());
+					}
+				};
+			}.start();
+		}
+
+		/**
+		 * 设置连接参数
+		 * 
+		 * @param timeout
+		 */
+		private static HttpParams setConnParams(int timeout) {
+			HttpParams params = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(params, timeout);
+			HttpConnectionParams.setSoTimeout(params, timeout);
+			HttpConnectionParams.setSocketBufferSize(params, 8192);
+			return params;
+		}
 	}
 
 }

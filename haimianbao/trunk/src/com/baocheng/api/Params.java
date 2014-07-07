@@ -1,4 +1,4 @@
-package com.baocheng.net;
+package com.baocheng.api;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -9,7 +9,7 @@ import java.util.Random;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-public class AddParams {
+public class Params {
 	private List<NameValuePair> params;
 
 	/**
@@ -22,7 +22,7 @@ public class AddParams {
 	/**
 	 * 构造参数
 	 */
-	public AddParams() {
+	public Params() {
 		params = new ArrayList<NameValuePair>();
 		ArrayList<String> signatures = getSha1("dedc44b3ab0e8e341260c14169792aff");
 		add("appkey", "c4ca4238a0b923820dcc509a6f75849b");
