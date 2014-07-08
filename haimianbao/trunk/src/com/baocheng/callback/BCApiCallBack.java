@@ -5,4 +5,5 @@ public interface BCApiCallBack {
 
 	public void OnFail(String result);
 
+	public void OnError(String result);
 }

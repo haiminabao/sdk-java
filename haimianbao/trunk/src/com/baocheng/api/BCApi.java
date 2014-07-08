@@ -14,6 +14,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -499,9 +501,9 @@ public class BCApi {
 							callBack.OnFail(code + "");
 						}
 					} catch (ClientProtocolException e) {
-						callBack.OnFail(e.getMessage());
+						callBack.OnError(e.getMessage());
 					} catch (IOException e) {
-						callBack.OnFail(e.getMessage());
+						callBack.OnError(e.getMessage());
 					}
 				};
 			}.start();
@@ -536,9 +538,9 @@ public class BCApi {
 							callBack.OnFail(code + "");
 						}
 					} catch (ClientProtocolException e) {
-						callBack.OnFail(e.getMessage());
+						callBack.OnError(e.getMessage());
 					} catch (IOException e) {
-						callBack.OnFail(e.getMessage());
+						callBack.OnError(e.getMessage());
 					}
 				};
 			}.start();
@@ -574,9 +576,9 @@ public class BCApi {
 							callBack.OnFail(code + "");
 						}
 					} catch (ClientProtocolException e) {
-						callBack.OnFail(e.getMessage());
+						callBack.OnError(e.getMessage());
 					} catch (IOException e) {
-						callBack.OnFail(e.getMessage());
+						callBack.OnError(e.getMessage());
 					}
 				};
 			}.start();
