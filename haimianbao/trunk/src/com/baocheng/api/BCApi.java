@@ -472,7 +472,7 @@ public class BCApi {
 	 * 联网类
 	 */
 	private static class BCNet {
-		private static String url;
+		private static String longUrl;
 
 		/**
 		 * get请求
@@ -485,13 +485,13 @@ public class BCApi {
 		 * @param callBack
 		 *            结果回调
 		 */
-		private static void get(final String url1, final Params addParams, final int timeout,
+		private static void get(final String url, final Params addParams, final int timeout,
 				final BCApiCallBack callBack) {
 			new Thread() {
 				public void run() {
-					url = addParams.getUrl(url1);
-					System.out.println(url);
-					HttpGet get = new HttpGet(url);
+					longUrl = addParams.getUrl(url);
+					System.out.println(longUrl);
+					HttpGet get = new HttpGet(longUrl);
 					try {
 						HttpResponse response = new DefaultHttpClient(setConnParams(timeout)).execute(get);
 						int code = response.getStatusLine().getStatusCode();
@@ -520,12 +520,12 @@ public class BCApi {
 		 * @param callBack
 		 *            结果回调
 		 */
-		private static void post(final String url2, final Params addParams, final int timeout,
+		private static void post(final String url, final Params addParams, final int timeout,
 				final BCApiCallBack callBack) {
 			new Thread() {
 				public void run() {
-					HttpPost post = new HttpPost(url2);
-					url = addParams.getUrl(url2);
+					HttpPost post = new HttpPost(url);
+					longUrl = addParams.getUrl(url);
 					HttpEntity entity;
 					try {
 						entity = new UrlEncodedFormEntity(addParams.getParams());
@@ -557,12 +557,12 @@ public class BCApi {
 		 * @param callBack
 		 *            结果回调
 		 */
-		private static void post(final String url2, final Params addParams, final int timeout,
+		private static void post(final String url, final Params addParams, final int timeout,
 				final BCApiCallBack callBack, final String header, final String json) {
 			new Thread() {
 				public void run() {
-					url = addParams.getUrl(url2);
-					HttpPost post = new HttpPost(url);
+					longUrl = addParams.getUrl(url);
+					HttpPost post = new HttpPost(longUrl);
 					post.addHeader("Content Type", header);
 					HttpEntity entity;
 					try {
