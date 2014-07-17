@@ -48,7 +48,7 @@ public class HMBApi {
 	 * @param isTest
 	 *            是否为测试环境
 	 */
-	public static void initBCSDK(String appKey, String appSecret, boolean isTest) {
+	public static void initHMBSDK(String appKey, String appSecret, boolean isTest) {
 		setAppKey(appKey);
 		setAppSecret(appSecret);
 		HMBApi.isTest = isTest;
