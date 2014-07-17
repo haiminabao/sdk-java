@@ -1,4 +1,4 @@
-package com.baocheng.api;
+package com.haimianbao.api;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -24,8 +24,8 @@ public class Params {
 	 */
 	public Params() {
 		params = new ArrayList<NameValuePair>();
-		ArrayList<String> signatures = getSha1(BCApi.getAppSecret());
-		add("appkey", BCApi.getAppKey());
+		ArrayList<String> signatures = getSha1(HMBApi.getAppSecret());
+		add("appkey", HMBApi.getAppKey());
 		add("nonce", signatures.get(0));
 		add("timestamp", signatures.get(1));
 		add("signature", signatures.get(2));

@@ -1,6 +1,6 @@
-package com.baocheng.callback;
+package com.haimianbao.callback;
 
-public interface BCApiCallBack {
+public interface HMBApiCallBack {
 	public void OnSuccess(String result);
 
 	public void OnFail(String result);

@@ -1,4 +1,4 @@
-package com.baocheng.api;
+package com.haimianbao.api;
 
 import java.io.IOException;
 
@@ -14,14 +14,12 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.baocheng.callback.BCApiCallBack;
+import com.haimianbao.callback.HMBApiCallBack;
 
-public class BCApi {
+public class HMBApi {
 	private static String testSite = "http://api.test.baoxiandr.com";
 	private static JSONObject jsCustomer;
 	private static String code;
@@ -53,7 +51,7 @@ public class BCApi {
 	public static void initBCSDK(String appKey, String appSecret, boolean isTest) {
 		setAppKey(appKey);
 		setAppSecret(appSecret);
-		BCApi.isTest = isTest;
+		HMBApi.isTest = isTest;
 	}
 
 	public static String getAppKey() {
@@ -61,7 +59,7 @@ public class BCApi {
 	}
 
 	private static void setAppKey(String appKey) {
-		BCApi.appKey = appKey;
+		HMBApi.appKey = appKey;
 	}
 
 	public static String getAppSecret() {
@@ -69,7 +67,7 @@ public class BCApi {
 	}
 
 	private static void setAppSecret(String appSecret) {
-		BCApi.appSecret = appSecret;
+		HMBApi.appSecret = appSecret;
 	}
 
 	/**
@@ -322,7 +320,7 @@ public class BCApi {
 	 * @param callBack
 	 *            结果回调
 	 */
-	public static void getDetail(String code, BCApiCallBack callBack) {
+	public static void getDetail(String code, HMBApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("code", code);
 		BCNet.get(getSite() + "/api/insurance/detail", addParams, 1000 * 10, callBack);
@@ -342,7 +340,7 @@ public class BCApi {
 	 * @param callBack
 	 *            结果回调
 	 */
-	public static void getInfo(String code, BCApiCallBack callBack) {
+	public static void getInfo(String code, HMBApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("code", code);
 		BCNet.get(getSite() + "/api/insurance/info", addParams, 1000 * 10, callBack);
@@ -375,7 +373,7 @@ public class BCApi {
 	 * @param callBack
 	 *            结果回调
 	 */
-	public static void getRegion(String code, BCApiCallBack callBack) {
+	public static void getRegion(String code, HMBApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("code", code);
 		BCNet.get(getSite() + "/api/region", addParams, 1000 * 10, callBack);
@@ -406,7 +404,7 @@ public class BCApi {
 	 * @param callBack
 	 *            结果回调
 	 */
-	public static void buy(String dealer_id, BCApiCallBack callBack) {
+	public static void buy(String dealer_id, HMBApiCallBack callBack) {
 		Params addParams = new Params();
 		JSONObject js = new JSONObject();
 		try {
@@ -435,7 +433,7 @@ public class BCApi {
 	 */
 	public static void setCustomerInfo(String code, String... infos) {
 		jsCustomer = new JSONObject();
-		BCApi.code = code;
+		HMBApi.code = code;
 		if (("B604FA6F".equals(code)) && (infos.length == 6)) {
 			try {
 				jsCustomer.put("name", infos[0]);
@@ -462,7 +460,7 @@ public class BCApi {
 	 * @param callBack
 	 *            结果回调
 	 */
-	public static void sendVerifyCode(String mobile, BCApiCallBack callBack) {
+	public static void sendVerifyCode(String mobile, HMBApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("mobile", mobile);
 		BCNet.post(getSite() + "/api/verify-code", addParams, 1000 * 10, callBack);
@@ -486,7 +484,7 @@ public class BCApi {
 		 *            结果回调
 		 */
 		private static void get(final String url, final Params addParams, final int timeout,
-				final BCApiCallBack callBack) {
+				final HMBApiCallBack callBack) {
 			new Thread() {
 				public void run() {
 					longUrl = addParams.getUrl(url);
@@ -521,7 +519,7 @@ public class BCApi {
 		 *            结果回调
 		 */
 		private static void post(final String url, final Params addParams, final int timeout,
-				final BCApiCallBack callBack) {
+				final HMBApiCallBack callBack) {
 			new Thread() {
 				public void run() {
 					HttpPost post = new HttpPost(url);
@@ -558,7 +556,7 @@ public class BCApi {
 		 *            结果回调
 		 */
 		private static void post(final String url, final Params addParams, final int timeout,
-				final BCApiCallBack callBack, final String header, final String json) {
+				final HMBApiCallBack callBack, final String header, final String json) {
 			new Thread() {
 				public void run() {
 					longUrl = addParams.getUrl(url);
