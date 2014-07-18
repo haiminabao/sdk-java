@@ -1,6 +1,8 @@
 package com.haimianbao.api;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -323,7 +325,7 @@ public class HMBApi {
 	public static void getDetail(String code, HMBApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("code", code);
-		BCNet.get(getSite() + "/api/insurance/detail", addParams, 1000 * 10, callBack);
+		HMBNet.get(getSite() + "/api/insurance/detail", addParams, 1000 * 10, callBack);
 	}
 
 	/**
@@ -343,7 +345,7 @@ public class HMBApi {
 	public static void getInfo(String code, HMBApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("code", code);
-		BCNet.get(getSite() + "/api/insurance/info", addParams, 1000 * 10, callBack);
+		HMBNet.get(getSite() + "/api/insurance/info", addParams, 1000 * 10, callBack);
 	}
 
 	/**
@@ -376,7 +378,7 @@ public class HMBApi {
 	public static void getRegion(String code, HMBApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("code", code);
-		BCNet.get(getSite() + "/api/region", addParams, 1000 * 10, callBack);
+		HMBNet.get(getSite() + "/api/region", addParams, 1000 * 10, callBack);
 	}
 
 	/**
@@ -418,7 +420,7 @@ public class HMBApi {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		BCNet.post(getSite() + "/api/insurance/buy", addParams, 1000 * 10, callBack, "application/json", js.toString());
+		HMBNet.post(getSite() + "/api/insurance/buy", addParams, 1000 * 10, callBack, "application/json", js.toString());
 	}
 
 	/**
@@ -463,13 +465,13 @@ public class HMBApi {
 	public static void sendVerifyCode(String mobile, HMBApiCallBack callBack) {
 		Params addParams = new Params();
 		addParams.add("mobile", mobile);
-		BCNet.post(getSite() + "/api/verify-code", addParams, 1000 * 10, callBack);
+		HMBNet.post(getSite() + "/api/verify-code", addParams, 1000 * 10, callBack);
 	}
 
 	/**
 	 * 联网类
 	 */
-	private static class BCNet {
+	private static class HMBNet {
 		private static String longUrl;
 
 		/**
@@ -494,7 +496,7 @@ public class HMBApi {
 						HttpResponse response = new DefaultHttpClient(setConnParams(timeout)).execute(get);
 						int code = response.getStatusLine().getStatusCode();
 						if (code == 200) {
-							callBack.OnSuccess(EntityUtils.toString(response.getEntity()));
+							callBack.OnSuccess(UnicodeToString(EntityUtils.toString(response.getEntity(),"utf-8")));
 						} else {
 							callBack.OnFail(code + "");
 						}
@@ -531,7 +533,7 @@ public class HMBApi {
 						HttpResponse response = new DefaultHttpClient(setConnParams(timeout)).execute(post);
 						int code = response.getStatusLine().getStatusCode();
 						if (code == 200) {
-							callBack.OnSuccess(EntityUtils.toString(response.getEntity()));
+							callBack.OnSuccess(UnicodeToString(EntityUtils.toString(response.getEntity(),"utf-8")));
 						} else {
 							callBack.OnFail(code + "");
 						}
@@ -569,7 +571,7 @@ public class HMBApi {
 						HttpResponse response = new DefaultHttpClient(setConnParams(timeout)).execute(post);
 						int code = response.getStatusLine().getStatusCode();
 						if (code == 200) {
-							callBack.OnSuccess(EntityUtils.toString(response.getEntity()));
+							callBack.OnSuccess(UnicodeToString(EntityUtils.toString(response.getEntity(),"utf-8")));
 						} else {
 							callBack.OnFail(code + "");
 						}
@@ -594,6 +596,16 @@ public class HMBApi {
 			HttpConnectionParams.setSocketBufferSize(params, 8192);
 			return params;
 		}
+		private static String UnicodeToString(String str) {
+	        Pattern pattern = Pattern.compile("(\\\\u(\\p{XDigit}{4}))");    
+	        Matcher matcher = pattern.matcher(str);
+	        char ch;
+	        while (matcher.find()) {
+	            ch = (char) Integer.parseInt(matcher.group(2), 16);
+	            str = str.replace(matcher.group(1), ch + "");    
+	        }
+	        return str;
+	    }
 	}
 
 }
